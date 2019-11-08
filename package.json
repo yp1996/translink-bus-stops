@@ -1,0 +1,21 @@
+{
+  "name": "translink-bus-stops",
+  "version": "1.0.0",
+  "description": "A visualization of bus stops operated by Translink",
+  "author": "whypretzels",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "d3": "^5.12.0",
+    "fs": "0.0.1-security",
+    "leaflet": "^1.5.1",
+    "nuxt": "^2.0.0",
+    "nuxt-leaflet": "0.0.19"
+  },
+  "devDependencies": {}
+}
