@@ -1,6 +1,5 @@
-# translink-bus-stops
-
-> A visualization of bus stops operated by Translink
+# A Bus Stop Story
+**[WIP]** A visualization of bus stops operated by Translink
 
 ## Build Setup
 
