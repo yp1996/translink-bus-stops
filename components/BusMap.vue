@@ -1,17 +1,15 @@
 <template>
-  <div class="BusAnimation" ref="main">
+  <div class="BusMap" ref="main">
     <div class="map" ref="map"></div>
-    <input name="speed" type="range" min="0" max="10" step="0.1" v-model="transitionSpeed" v-on:change="updateAnimation" />  
-</div>
+  </div>
 </template>
 
 <style>
 
-.BusAnimation {
+.BusMap {
   display: block;
   width: 800px;
   height: 800px;
-  position: relative;
 }
 
 .map {
@@ -25,18 +23,16 @@
 import * as d3 from "d3";
 
 export default {
-  name: "BusAnimation",
+  name: "BusMap",
   props: ["data"],
 
   data: function ()  {
-    return {
-       map: Object,
-       svg: Object,
-       tooltip: Object,
-       tooltipFixed: Object,
-       g: Object,
-       transitionSpeed: 1
-    }
+  return {
+     map: Object,
+     svg: Object,
+     tooltip: Object,
+     g: Object
+  }
   },
 
   mounted() {
@@ -47,7 +43,7 @@ export default {
   methods: {
 
     createMap() {
-      return this.$L.map(this.$refs.map).setView(this.centrePoint, 14);
+      return this.$L.map(this.$refs.map).setView(this.centrePoint, 10.2);
     },
 
     plotData() {
@@ -55,9 +51,6 @@ export default {
     const width = 800;
     const height = 800;
     const numRoutes = 400;
-    const defaultTransitionTime = 2000;
-    const maxSpeed = 5;
-    const numTicks = 20;
 
     var vm = this; 
 
@@ -83,27 +76,19 @@ export default {
 
     // add the graph canvas to the body of the webpage
 
-    this.svg = d3.select(this.map.getPanes().overlayPane).append("svg").attr("position", "relative");
+    this.svg = d3.select(this.map.getPanes().overlayPane).append("svg");
 
     this.g = this.svg.append("g").attr("class", "leaflet-zoom-hide");
 
     // add the tooltip area to the webpage
     this.tooltip = d3.select(this.$refs.main).append("div")
-        .attr("style", "position: absolute; opacity: 0.9; background: #fff; z-index:999; bottom: 0; left: 0");
-
-    this.tooltipFixed =  d3.select(this.$refs.main).append("div")
-        .attr("style", "position: absolute; opacity: 0.9; background: #fff; z-index:999; bottom: 0px; left: 0px");
+        .attr("style", "position: absolute; opacity: 0; background: #fff; z-index:999").attr("ref","tooltip");
 
     this.map.on("moveend", this.reset);
 
-    this.data.sort(function(x, y){
-       return d3.ascending(x.StopNo, y.StopNo);
-    })
-
     this.data.forEach(function(d) {
       d.LatLng = new vm.$L.LatLng(d.Latitude,
-                  d.Longitude);
-      d.Active = false;
+                  d.Longitude)
     });
 
     var colour = d3.scaleOrdinal()
@@ -130,7 +115,6 @@ export default {
       vm.tooltipExit();
     });
 
-    this.updateAnimation();
 
     this.reset();
 
@@ -151,38 +135,6 @@ export default {
         this.g.attr('transform', 'translate('+ -topLeft.x + ',' + -topLeft.y + ')');
         this.updatePositions();
 
-    },
-
-    updateAnimation() {
-
-      let vm = this; 
-
-      let transitionTime = vm.transitionTime();
-
-      this.svg.selectAll("circle")
-      .filter((d) => {return d.Active === false;})
-      .interrupt()
-      .attr("opacity", 0)
-      .transition()
-      .delay(function(d,i){return(i*transitionTime)})
-      .duration(transitionTime)
-      .attr("opacity", 1)
-      .on("start", function(d) {
-
-        let currentZoom = vm.map.getZoom();
-        vm.map.setView(d.LatLng, currentZoom);
-        vm.tooltipFixed.html(d.Name + "<br/> (" + d.Latitude
-            + ", " + d.Longitude + ")" + "<br/>" + d.Routes);
-        vm.tooltipFixed.style("opacity", 0).transition()
-              .duration(transitionTime/3)
-              .style("opacity", .9);
-
-      })
-      .on("end", function(d) {
-
-        d.Active = true;
-
-      });
     },
 
     updatePositions() {
@@ -230,11 +182,6 @@ export default {
 
     yMap(d) {
       return this.map.latLngToLayerPoint(d.LatLng).y;
-    },
-
-    transitionTime() {
-      console.log(2000 / this.transitionSpeed)
-      return 2000 / this.transitionSpeed;
     }
 
   },
